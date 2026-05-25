@@ -815,7 +815,7 @@ h1, h2, h3, h4, .brand-heading {
 /* Typography Container */
 .panel-content {
   position: absolute;
-  bottom: 5vh; /* Push to the very bottom */
+  bottom: 15vh; /* Raised slightly from the bottom */
   left: 50%;
   transform: translateX(-50%);
   width: 100%;

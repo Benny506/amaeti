@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import logoWordmark from '../../assets/logo-wordmark.svg';
+import logoMonogram from '../../assets/logo.svg';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -24,7 +25,7 @@ const Header = () => {
       <header className={`luxe-nav ${isScrolled ? 'scrolled' : ''}`}>
         <div className="nav-container">
           <button className="burger-menu-btn" onClick={() => setMobileMenuOpen(true)}>
-            <Menu size={24} />
+            <Menu size={24} color="var(--color-text-dark)" />
           </button>
 
           <nav className="nav-links">
@@ -75,7 +76,10 @@ const Header = () => {
           animation: 'slideUpFade 0.4s ease-out'
         }}>
           <div className="d-flex justify-content-between align-items-center mb-5">
-            <img src={logoWordmark} alt="amaeti logo" style={{ height: '35px', filter: 'invert(1)' }} />
+            <div className="d-flex align-items-center gap-0" style={{ gap: '0px' }}>
+              <img src={logoMonogram} alt="amaeti icon" style={{ height: '45px', filter: 'invert(1) brightness(100)' }} />
+              <img src={logoWordmark} alt="amaeti wordmark" style={{ height: '30px', filter: 'invert(1) brightness(100)' }} />
+            </div>
             <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', color: '#fff' }}>
               <X size={28} />
             </button>
