@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
-import TypewriterText from '../ui/TypewriterText';
+
+import vid1 from '../../assets/tempVids/vid1.mp4';
+import vid3 from '../../assets/tempVids/vid3.mp4';
+import vid4 from '../../assets/tempVids/vid4.mp4';
 
 const slides = [
   {
     id: 1,
-    image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+    video: vid1,
     subtitle: 'NEW SEASON COLLECTION',
     title: 'Abstract expression of art & form.',
     desc: 'Designed with architectural silhouettes, muted natural tones, and premium organic fabrics for the contemporary wardrobe.',
@@ -13,7 +16,7 @@ const slides = [
   },
   {
     id: 2,
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+    video: vid3,
     subtitle: 'THE ATELIER EXCLUSIVE',
     title: 'A curation of sculptural silhouettes.',
     desc: 'Each piece is an envelope of form, natural fabric, and sculptured silhouette built from organic symmetry.',
@@ -21,7 +24,7 @@ const slides = [
   },
   {
     id: 3,
-    image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+    video: vid4,
     subtitle: 'ORGANIC SYMMETRY',
     title: 'Wearable canvases for the modern muse.',
     desc: 'Embracing the intersection of minimalist design and high-fashion architecture.',
@@ -31,19 +34,29 @@ const slides = [
 
 const HeroCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [typingComplete, setTypingComplete] = useState(false);
+  const videoRefs = useRef([]);
 
-  // Auto-advance slides every 10 seconds (slower to accommodate the slower typing)
+  // Control video playback based on the active slide
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-      setTypingComplete(false);
-    }, 10000);
-    return () => clearInterval(timer);
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+      if (index === currentSlide) {
+        video.currentTime = 0;
+        video.play().catch(e => console.log('Video play interrupted:', e));
+      } else {
+        video.pause();
+      }
+    });
   }, [currentSlide]);
 
+  const handleVideoEnd = (index) => {
+    if (index === currentSlide) {
+      setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    }
+  };
+
   return (
-    <section className="hero-wrapper position-relative overflow-hidden" style={{ height: '90vh', backgroundColor: '#e5e0d8' }}>
+    <section className="hero-wrapper position-relative overflow-hidden" style={{ height: '110vh', backgroundColor: '#e5e0d8' }}>
       {slides.map((slide, index) => {
         const isActive = index === currentSlide;
         return (
@@ -56,23 +69,30 @@ const HeroCarousel = () => {
               zIndex: isActive ? 10 : 1
             }}
           >
-            {/* Background Image */}
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className="hero-bg-image"
+            {/* Background Video */}
+            <video
+              ref={(el) => (videoRefs.current[index] = el)}
+              src={slide.video}
+              muted
+              playsInline
+              onEnded={() => handleVideoEnd(index)}
+              className="hero-bg-video"
               style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover',
-                transform: isActive ? 'scale(1.05)' : 'scale(1)',
-                transition: 'transform 10s ease-out'
+                objectFit: 'cover'
               }}
             />
-            <div className="hero-overlay-dark position-absolute top-0 start-0 w-100 h-100" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.75) 35%, rgba(0,0,0,0.3) 65%, transparent 100%)' }}></div>
+            <div 
+              className="hero-overlay-dark position-absolute top-0 start-0 w-100 h-100" 
+              style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.65) 45%, rgba(0,0,0,0.2) 75%, transparent 100%)' }}
+            ></div>
 
             {/* Card Content */}
-            <div className="hero-content-panel h-100 d-flex align-items-center position-relative z-3">
+            <div className="hero-content-panel h-100 d-flex align-items-center position-relative z-3" style={{ paddingLeft: '5%', maxWidth: '1200px', margin: '0 auto' }}>
               <div
                 className="hero-text-block"
                 style={{
@@ -81,32 +101,24 @@ const HeroCarousel = () => {
                   transition: 'opacity 0.8s ease 0.5s, transform 0.8s ease 0.5s'
                 }}
               >
-                <span className="letter-spaced-title">{slide.subtitle}</span>
-                <h1 className="hero-title" style={{ minHeight: '120px' }}>
-                  {isActive ? (
-                    <TypewriterText
-                      text={slide.title}
-                      delay={80}
-                      isActive={true}
-                      onComplete={() => setTypingComplete(true)}
-                    />
-                  ) : null}
-                  {isActive && !typingComplete && <span className="blinking-cursor" style={{ animation: 'blink 1s step-end infinite' }}>|</span>}
+                <span className="letter-spaced-title mb-3 d-block">{slide.subtitle}</span>
+                <h1 className="hero-title mb-4" style={{ minHeight: 'auto' }}>
+                  {slide.title}
                 </h1>
-                <p className="hero-desc" style={{
-                  opacity: typingComplete && isActive ? 1 : 0,
-                  transform: typingComplete && isActive ? 'translateY(0)' : 'translateY(15px)',
-                  transition: 'opacity 1s ease, transform 1s ease'
+                <p className="hero-desc mb-5" style={{
+                  opacity: isActive ? 1 : 0,
+                  transform: isActive ? 'translateY(0)' : 'translateY(15px)',
+                  transition: 'opacity 1s ease 0.7s, transform 1s ease 0.7s'
                 }}>
                   {slide.desc}
                 </p>
                 <a
                   href={slide.link}
-                  className="luxe-btn"
+                  className="luxe-btn d-inline-flex align-items-center"
                   style={{
-                    opacity: typingComplete && isActive ? 1 : 0,
-                    transform: typingComplete && isActive ? 'translateY(0)' : 'translateY(15px)',
-                    transition: 'opacity 1s ease 0.2s, transform 1s ease 0.2s'
+                    opacity: isActive ? 1 : 0,
+                    transform: isActive ? 'translateY(0)' : 'translateY(15px)',
+                    transition: 'opacity 1s ease 0.9s, transform 1s ease 0.9s'
                   }}
                 >
                   Explore Collection <ArrowRight size={14} className="ms-2" />
@@ -125,7 +137,6 @@ const HeroCarousel = () => {
             onClick={() => {
               if (currentSlide !== index) {
                 setCurrentSlide(index);
-                setTypingComplete(false);
               }
             }}
             style={{

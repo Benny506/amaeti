@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import AnimatedMonogram from '../ui/AnimatedMonogram';
-import AnimatedWordmark from '../ui/AnimatedWordmark';
+// import AnimatedMonogram from '../ui/AnimatedMonogram';
+// import AnimatedWordmark from '../ui/AnimatedWordmark';
+import logoWordmark from '../../assets/logo-wordmark.svg';
+import logoMonogram from '../../assets/logo.svg';
 
 const AtelierSection = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [isDrawing, setIsDrawing] = useState(true);
+  // const [isDrawing, setIsDrawing] = useState(true);
   const sectionRef = useRef(null);
 
   // Scroll visibility observer
@@ -33,6 +35,7 @@ const AtelierSection = () => {
   // Master animation synchronization loop:
   // Phase 1: Draw IN (takes ~10s) + Pause 1.5s = 11.5s
   // Phase 2: Draw OUT (reverse draw, takes 9.0s) + Pause 0.05s = 9.05s
+  /*
   useEffect(() => {
     let isMounted = true;
     
@@ -54,6 +57,7 @@ const AtelierSection = () => {
       isMounted = false;
     };
   }, []);
+  */
 
   return (
     <section id="atelier" className="section-padding intro-section" ref={sectionRef}>
@@ -95,8 +99,13 @@ const AtelierSection = () => {
               padding: '60px 40px'
             }}
           >
-            <AnimatedMonogram isDrawing={isDrawing} style={{ height: '160px', marginBottom: '35px', filter: 'brightness(0)' }} />
-            <AnimatedWordmark isDrawing={isDrawing} style={{ width: '100%', maxWidth: '340px' }} />
+            {/* <AnimatedMonogram isDrawing={isDrawing} style={{ height: '160px', marginBottom: '35px', filter: 'brightness(0)' }} /> */}
+            {/* <AnimatedWordmark isDrawing={isDrawing} style={{ width: '100%', maxWidth: '340px' }} /> */}
+            
+            <div className="d-flex flex-column align-items-center justify-content-center">
+              <img src={logoMonogram} alt="amaeti icon" style={{ height: '120px', marginBottom: '30px', filter: 'brightness(0)' }} />
+              <img src={logoWordmark} alt="amaeti wordmark" style={{ width: '100%', maxWidth: '280px', filter: 'brightness(0)' }} />
+            </div>
           </div>
         </div>
       </div>

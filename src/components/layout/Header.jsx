@@ -11,7 +11,8 @@ const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const threshold = window.location.pathname === '/' ? window.innerHeight * 0.95 : 50;
+      setIsScrolled(window.scrollY > threshold);
     };
     window.addEventListener('scroll', handleScroll);
 
@@ -20,12 +21,32 @@ const Header = () => {
     };
   }, []);
 
+  const isHome = location.pathname === '/';
+  const isTransparent = isHome && !isScrolled;
+
+  const headerStyle = isHome ? {
+    position: 'fixed',
+    top: isScrolled ? '0' : '35px', 
+    width: '100%',
+    background: isScrolled ? 'rgba(250, 249, 246, 0.85)' : 'transparent',
+    backdropFilter: isScrolled ? 'blur(15px)' : 'none',
+    WebkitBackdropFilter: isScrolled ? 'blur(15px)' : 'none',
+    borderBottom: isScrolled ? '1px solid rgba(212, 197, 177, 0.3)' : '1px solid transparent'
+  } : {
+    position: 'sticky',
+    top: '0',
+    background: 'rgba(250, 249, 246, 0.85)',
+    backdropFilter: 'blur(15px)',
+    WebkitBackdropFilter: 'blur(15px)',
+    borderBottom: '1px solid rgba(212, 197, 177, 0.3)'
+  };
+
   return (
     <>
-      <header className={`luxe-nav ${isScrolled ? 'scrolled' : ''}`}>
+      <header className={`luxe-nav ${isScrolled ? 'scrolled' : ''} ${isTransparent ? 'transparent-mode' : ''}`} style={headerStyle}>
         <div className="nav-container">
           <button className="burger-menu-btn" onClick={() => setMobileMenuOpen(true)}>
-            <Menu size={24} color="var(--color-text-dark)" />
+            <Menu size={24} color={isTransparent ? '#ffffff' : 'var(--color-text-dark)'} />
           </button>
 
           <nav className="nav-links">
@@ -47,14 +68,15 @@ const Header = () => {
           </Link>
 
           <div className="nav-actions">
-            <span style={{
+            <span className="coming-soon-badge" style={{
               fontFamily: 'var(--font-sans)',
               fontSize: '11px',
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
               color: 'var(--color-text-muted)',
               borderBottom: '1px solid var(--color-primary)',
-              paddingBottom: '2px'
+              paddingBottom: '2px',
+              transition: 'all 0.3s'
             }}>Coming Soon</span>
           </div>
         </div>
