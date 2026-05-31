@@ -5,7 +5,7 @@ import visionAnimation from '../../assets/lottie/Vision Eye.json';
 
 const LottieComponent = Lottie.default || Lottie;
 
-const MissionVision = () => {
+const MissionVision = ({ content = {} }) => {
   return (
     <section className="mission-vision-section">
       <div className="mv-container">
@@ -15,9 +15,9 @@ const MissionVision = () => {
           <div className="lottie-container lottie-graphic-container" style={{ background: 'transparent', border: 'none' }}>
             <LottieComponent animationData={missionAnimation} loop={true} style={{ height: '100%', width: '100%' }} />
           </div>
-          <h2>Our Mission</h2>
+          <h2>{content.mission_title}</h2>
           <p>
-            To redefine modern luxury by creating timeless, sculptural garments that empower the wearer through minimalist design and uncompromising quality. We strip away the excess to reveal the essential.
+            {content.mission_text}
           </p>
         </div>
 
@@ -26,9 +26,9 @@ const MissionVision = () => {
           <div className="lottie-container lottie-graphic-container" style={{ background: 'transparent', border: 'none' }}>
             <LottieComponent animationData={visionAnimation} loop={true} style={{ height: '100%', width: '100%' }} />
           </div>
-          <h2>Our Vision</h2>
+          <h2>{content.vision_title}</h2>
           <p>
-            To build a globally recognized house of design where fashion is treated as wearable architecture. A future where sustainability and aesthetic perfection exist in complete harmony.
+            {content.vision_text}
           </p>
         </div>
 

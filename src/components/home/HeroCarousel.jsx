@@ -1,40 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { addToast } from '../../store/uiSlice';
 
-import vid1 from '../../assets/tempVids/vid1.mp4';
-import vid3 from '../../assets/tempVids/vid3.mp4';
-import vid4 from '../../assets/tempVids/vid4.mp4';
+import { SUPABASE_STORAGE_URL } from '../../supabase';
 
-const slides = [
-  {
-    id: 1,
-    video: vid1,
-    subtitle: 'NEW SEASON COLLECTION',
-    title: 'Abstract expression of art & form.',
-    desc: 'Designed with architectural silhouettes, muted natural tones, and premium organic fabrics for the contemporary wardrobe.',
-    link: '#collections'
-  },
-  {
-    id: 2,
-    video: vid3,
-    subtitle: 'THE ATELIER EXCLUSIVE',
-    title: 'A curation of sculptural silhouettes.',
-    desc: 'Each piece is an envelope of form, natural fabric, and sculptured silhouette built from organic symmetry.',
-    link: '#atelier'
-  },
-  {
-    id: 3,
-    video: vid4,
-    subtitle: 'ORGANIC SYMMETRY',
-    title: 'Wearable canvases for the modern muse.',
-    desc: 'Embracing the intersection of minimalist design and high-fashion architecture.',
-    link: '#philosophy'
-  }
-];
-
-const HeroCarousel = () => {
+const HeroCarousel = ({ content }) => {
+  const slides = content?.slides || [];
   const [currentSlide, setCurrentSlide] = useState(0);
   const videoRefs = useRef([]);
+  const dispatch = useDispatch();
+
+  const handleComingSoon = (e) => {
+    e.preventDefault();
+    dispatch(addToast({ type: 'info', message: 'Coming Soon' }));
+  };
 
   // Control video playback based on the active slide
   useEffect(() => {
@@ -69,11 +49,12 @@ const HeroCarousel = () => {
               zIndex: isActive ? 10 : 1
             }}
           >
-            {/* Background Video */}
-            <video
-              ref={(el) => (videoRefs.current[index] = el)}
-              src={slide.video}
-              muted
+            {/* Background Video (Only render if src exists) */}
+            {slide.video_src && (
+              <video
+                ref={(el) => (videoRefs.current[index] = el)}
+                src={SUPABASE_STORAGE_URL + 'site_content/' + slide.video_src}
+                muted
               playsInline
               onEnded={() => handleVideoEnd(index)}
               className="hero-bg-video"
@@ -86,6 +67,7 @@ const HeroCarousel = () => {
                 objectFit: 'cover'
               }}
             />
+            )}
             <div 
               className="hero-overlay-dark position-absolute top-0 start-0 w-100 h-100" 
               style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.65) 45%, rgba(0,0,0,0.2) 75%, transparent 100%)' }}
@@ -113,7 +95,8 @@ const HeroCarousel = () => {
                   {slide.desc}
                 </p>
                 <a
-                  href={slide.link}
+                  href="#collections"
+                  onClick={handleComingSoon}
                   className="luxe-btn d-inline-flex align-items-center"
                   style={{
                     opacity: isActive ? 1 : 0,
@@ -121,7 +104,7 @@ const HeroCarousel = () => {
                     transition: 'opacity 1s ease 0.9s, transform 1s ease 0.9s'
                   }}
                 >
-                  Explore Collection <ArrowRight size={14} className="ms-2" />
+                  {slide.button_text} <ArrowRight size={14} className="ms-2" />
                 </a>
               </div>
             </div>
@@ -129,28 +112,29 @@ const HeroCarousel = () => {
         );
       })}
 
-      {/* Manual Controls */}
-      <div className="position-absolute bottom-0 end-0 p-5 z-3 d-flex gap-3">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              if (currentSlide !== index) {
-                setCurrentSlide(index);
-              }
-            }}
-            style={{
-              width: '40px',
-              height: '3px',
-              backgroundColor: currentSlide === index ? 'var(--color-bg-light)' : 'rgba(255,255,255,0.4)',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
+      {slides.length > 1 && (
+        <div className="position-absolute bottom-0 end-0 p-5 z-3 d-flex gap-3">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                if (currentSlide !== index) {
+                  setCurrentSlide(index);
+                }
+              }}
+              style={{
+                width: '40px',
+                height: '3px',
+                backgroundColor: currentSlide === index ? 'var(--color-bg-light)' : 'rgba(255,255,255,0.4)',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

@@ -1,17 +1,20 @@
 import React from 'react';
+import { SUPABASE_STORAGE_URL } from '../../supabase';
 
-const AboutHero = () => {
+const AboutHero = ({ content = {} }) => {
   return (
     <section className="about-hero">
-      <img 
-        src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1920&q=80" 
-        alt="The Architecture of Elegance" 
-        className="about-hero-bg"
-      />
+      {content.background_image_src && (
+        <img 
+          src={content.background_image_src.startsWith('http') ? content.background_image_src : SUPABASE_STORAGE_URL + 'site_content/' + content.background_image_src} 
+          alt={content.title} 
+          className="about-hero-bg"
+        />
+      )}
       <div className="about-hero-content">
-        <h1 className="about-hero-title">The Architecture of Elegance</h1>
+        <h1 className="about-hero-title">{content.title}</h1>
         <p style={{ letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '14px' }}>
-          Form • Fabric • Future
+          {content.subtitle}
         </p>
       </div>
     </section>

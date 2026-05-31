@@ -1,14 +1,17 @@
 import React from 'react';
+import { SUPABASE_STORAGE_URL } from '../../supabase';
 
-const ContactHero = () => {
+const ContactHero = ({ content = {} }) => {
   return (
     <section className="contact-hero">
-      <img 
-        src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1920&q=80" 
-        alt="Get in Touch" 
-        className="contact-hero-bg"
-      />
-      <h1 className="contact-hero-title">Get In Touch</h1>
+      {content.background_image_src && (
+        <img 
+          src={content.background_image_src.startsWith('http') ? content.background_image_src : SUPABASE_STORAGE_URL + 'site_content/' + content.background_image_src} 
+          alt="Get in Touch" 
+          className="contact-hero-bg"
+        />
+      )}
+      <h1 className="contact-hero-title">{content.title}</h1>
     </section>
   );
 };

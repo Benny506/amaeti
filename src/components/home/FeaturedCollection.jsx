@@ -1,101 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 
-import vid1 from '../../assets/tempVids/vid1.mp4';
-import vid3 from '../../assets/tempVids/vid3.mp4';
-import vid4 from '../../assets/tempVids/vid4.mp4';
-
 gsap.registerPlugin(ScrollTrigger);
 
-const rawSlides = [
-  {
-    id: 1,
-    left: {
-      title: "Linen & Canvas",
-      type: "image",
-      src: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80",
-      filter: 'sepia(0.2)'
-    },
-    right: {
-      title: "Atelier Silks",
-      type: "video",
-      src: vid1,
-      filter: 'hue-rotate(15deg) contrast(1.1)'
-    }
-  },
-  {
-    left: {
-      title: "Knitwear",
-      type: "video",
-      src: vid3,
-      filter: 'grayscale(0.5) contrast(1.2)'
-    },
-    id: 2,
-    right: {
-      title: "Outerwear",
-      type: "image",
-      src: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?auto=format&fit=crop&w=800&q=80",
-      filter: 'grayscale(1)'
-    },
-  },
-  {
-    id: 3,
-    left: {
-      title: "Handbags",
-      type: "image",
-      src: "https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&w=800&q=80",
-      filter: 'contrast(1.1)'
-    },
-    right: {
-      title: "Footwear",
-      type: "image",
-      src: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80",
-      filter: 'sepia(0.1)'
-    }
-  },
-  {
-    id: 4,
-    left: {
-      title: "Accessories",
-      type: "image",
-      src: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=800&q=80",
-      filter: 'brightness(0.8)'
-    },
-    right: {
-      title: "Swimwear",
-      type: "video",
-      src: vid4,
-      filter: 'sepia(0.3) brightness(0.9)'
-    }
-  },
-  {
-    id: 5,
-    left: {
-      title: "Tailoring",
-      type: "image",
-      src: "https://images.unsplash.com/photo-1584916201218-f4242ceb4809?auto=format&fit=crop&w=800&q=80",
-      filter: 'grayscale(0.5)'
-    },
-    right: {
-      title: "Eveningwear",
-      type: "image",
-      src: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=800&q=80",
-      filter: 'sepia(0.3)'
-    }
-  }
-];
-
-const mobileSlides = rawSlides.flatMap((slide, i) => [
-  { ...slide.left, id: `${slide.id}-L`, zIndex: i * 2 + 1 },
-  { ...slide.right, id: `${slide.id}-R`, zIndex: i * 2 + 2 }
-]);
-
-const desktopSlides = rawSlides.map((slide, i) => ({
-  ...slide,
-  zIndex: i + 1
-}));
+import { SUPABASE_STORAGE_URL } from '../../supabase';
 
 // Reusable Media Component that handles both images and videos seamlessly
 const MediaItem = ({ data }) => {
@@ -115,11 +25,11 @@ const MediaItem = ({ data }) => {
         />
       )}
 
-      {data.type === 'video' ? (
+      {data.src && data.type === 'video' && (
         <video
-          src={data.src}
+          src={data.src.startsWith('http') ? data.src : SUPABASE_STORAGE_URL + 'site_content/' + data.src}
           style={{
-            filter: data.filter,
+            filter: data.filter || 'none',
             width: '100%',
             height: '100%',
             objectFit: 'cover',
@@ -132,11 +42,12 @@ const MediaItem = ({ data }) => {
           playsInline
           onLoadedData={() => setIsLoaded(true)}
         />
-      ) : (
+      )}
+      {data.src && data.type === 'image' && (
         <img
-          src={data.src}
+          src={data.src.startsWith('http') ? data.src : SUPABASE_STORAGE_URL + 'site_content/' + data.src}
           style={{
-            filter: data.filter,
+            filter: data.filter || 'none',
             width: '100%',
             height: '100%',
             objectFit: 'cover',
@@ -151,8 +62,25 @@ const MediaItem = ({ data }) => {
   );
 };
 
-const FeaturedCollection = () => {
+const FeaturedCollection = ({ content = {} }) => {
   const containerRef = useRef();
+  
+  const rawSlides = content.slides || [];
+  
+  const mobileSlides = useMemo(() => {
+    return rawSlides.flatMap((slide, i) => [
+      { ...slide.left, id: `slide-${i}-L`, zIndex: i * 2 + 1 },
+      { ...slide.right, id: `slide-${i}-R`, zIndex: i * 2 + 2 }
+    ]);
+  }, [rawSlides]);
+
+  const desktopSlides = useMemo(() => {
+    return rawSlides.map((slide, i) => ({
+      ...slide,
+      id: `slide-${i}`,
+      zIndex: i + 1
+    }));
+  }, [rawSlides]);
 
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.matchMedia('(max-width: 768px)').matches : false

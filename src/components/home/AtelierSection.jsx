@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
-// import AnimatedMonogram from '../ui/AnimatedMonogram';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addToast } from '../../store/uiSlice';
 // import AnimatedWordmark from '../ui/AnimatedWordmark';
 import logoWordmark from '../../assets/logo-wordmark.svg';
 import logoMonogram from '../../assets/logo.svg';
 
-const AtelierSection = () => {
+const AtelierSection = ({ content = {} }) => {
   const [isVisible, setIsVisible] = useState(false);
-  // const [isDrawing, setIsDrawing] = useState(true);
   const sectionRef = useRef(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // Scroll visibility observer
   useEffect(() => {
@@ -70,14 +73,24 @@ const AtelierSection = () => {
             transition: 'opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1) 0.1s, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1) 0.1s'
           }}
         >
-          <span className="letter-spaced-title">THE ATELIER PHILOSOPHY</span>
-          <h2 className="intro-quote">"Fashion is wearable abstract expressionism."</h2>
+          <span className="letter-spaced-title">{content.subtitle}</span>
+          <h2 className="intro-quote">{content.quote}</h2>
           <p className="intro-body">
-            At <strong>amaeti</strong>, our design language is defined by the intersection of fine craftsmanship and organic geometry. Drawing inspiration from contemporary sculpture and natural textures, we forge garments that sit harmoniously on the human form while asserting a bold, architectural voice.
+            {content.body}
           </p>
           <div className="d-flex gap-4">
-            <a href="/#philosophy" className="luxe-btn luxe-btn-outline">Our Story</a>
-            <a href="/#collections" className="luxe-btn">Shop Atelier</a>
+            <button 
+              onClick={() => navigate('/about')} 
+              className="luxe-btn luxe-btn-outline"
+            >
+              {content.button_1_text}
+            </button>
+            <button 
+              onClick={() => dispatch(addToast({ type: 'info', message: 'Coming Soon' }))} 
+              className="luxe-btn"
+            >
+              {content.button_2_text}
+            </button>
           </div>
         </div>
 
