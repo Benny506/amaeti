@@ -1,0 +1,339 @@
+/* Desktop Header */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  transition: all 0.4s ease;
+}
+
+.app-header.scrolled {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 10px 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  flex: 1;
+}
+
+.nav-link-item {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-dark);
+  position: relative;
+  transition: opacity 0.3s ease;
+}
+
+.nav-link-item:hover,
+.nav-link-item.active {
+  opacity: 0.6;
+}
+
+.app-header.transparent .nav-link-item {
+  color: #fff;
+}
+
+/* Refined Luxury Dropdown */
+.nav-item-dropdown {
+  position: relative;
+}
+
+.dropdown-menu-custom {
+  position: absolute;
+  top: 100%;
+  left: -24px;
+  padding-top: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(10px);
+  z-index: 1001;
+}
+
+.nav-item-dropdown:hover .dropdown-menu-custom {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-inner {
+  background-color: #fff;
+  min-width: 240px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dropdown-item {
+  display: inline-block;
+  padding: 8px 0;
+  font-family: var(--font-sans);
+  font-size: 12.2px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-dark);
+  text-decoration: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  position: relative;
+  width: fit-content;
+}
+
+/* Elegant hover effect: slight fade and minor nudge */
+.dropdown-item:hover {
+  opacity: 0.5;
+  transform: translateX(4px);
+  color: var(--color-text-dark);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.06);
+  margin: 16px 0;
+  width: 100%;
+}
+
+.dropdown-scroll-area {
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-right: 15px;
+  gap: 10px;
+  /* space for scrollbar */
+}
+
+/* Custom, sleek scrollbar for the dropdown */
+.dropdown-scroll-area::-webkit-scrollbar {
+  width: 3px;
+}
+
+.dropdown-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown-scroll-area::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+
+.dropdown-item.view-all {
+  font-family: var(--font-serif-display);
+  font-size: 16px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  padding-bottom: 4px;
+}
+
+.nav-brand-img {
+  height: 42px;
+  transition: filter 0.3s ease;
+}
+
+.app-header.transparent .nav-brand-img {
+  filter: invert(1) brightness(100);
+}
+
+.nav-actions {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+/* Text Links for Login and Cart */
+.nav-text-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-dark);
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.nav-text-btn:hover {
+  opacity: 0.6;
+}
+
+.app-header.transparent .nav-text-btn {
+  color: #fff;
+}
+
+.cart-btn {
+  position: relative;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-dark);
+}
+
+.app-header.transparent .mobile-menu-btn {
+  color: #fff;
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(26, 26, 26, 0.98);
+  backdrop-filter: blur(15px);
+  z-index: 2000;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  animation: slideUpFade 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.mobile-brand {
+  display: flex;
+  align-items: center;
+}
+
+.mobile-brand img {
+  filter: invert(1) brightness(100);
+}
+
+.mobile-close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.mobile-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.mobile-nav-link {
+  color: #fff;
+  font-size: 28px;
+  font-family: var(--font-serif-display);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: opacity 0.3s;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-nav-link:hover {
+  opacity: 0.7;
+}
+
+.mobile-accordion {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-dropdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding-left: 15px;
+  margin-top: 15px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  animation: slideDown 0.3s ease;
+}
+
+.mobile-sublink {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  font-family: var(--font-sans);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: color 0.3s;
+}
+
+.mobile-sublink:hover {
+  color: #fff;
+}
+
+.mobile-actions {
+  margin-top: auto;
+  padding-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 992px) {
+  .nav-links {
+    display: none;
+  }
+
+  .nav-actions {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  .app-header {
+    justify-content: space-between;
+  }
+}

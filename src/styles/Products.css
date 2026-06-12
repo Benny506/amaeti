@@ -1,0 +1,224 @@
+.products-page {
+  min-height: 100vh;
+  background-color: var(--color-bg-light);
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+
+.shop-header {
+  text-align: center;
+  margin-bottom: 80px;
+  padding: 0 20px;
+}
+
+.shop-title {
+  font-family: var(--font-serif-display);
+  font-size: 56px;
+  color: var(--color-text-dark);
+  margin-bottom: 15px;
+  letter-spacing: 0.02em;
+}
+
+.shop-desc {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+  font-weight: 300;
+}
+
+/* Structured CSS Grid */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px 20px; /* 40px vertical gap, 20px horizontal gap */
+  padding: 0 40px;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  background: transparent;
+}
+
+/* Enforced High-Fashion Aspect Ratio */
+.uniform-img-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 135%; /* 4:5-ish portrait ratio */
+  overflow: hidden;
+  background: #f5f5f5;
+  margin-bottom: 15px;
+}
+
+.uniform-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.product-card:hover .uniform-img {
+  transform: scale(1.03);
+}
+
+.img-overlay-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.action-add-btn-corner {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 18px;
+  background: #fff;
+  color: #000;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 2;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.action-add-btn-corner:hover {
+  transform: scale(1.05);
+  background: #000;
+  color: #fff;
+}
+
+.product-info {
+  padding: 0;
+  text-align: left;
+}
+
+.product-title {
+  font-family: var(--font-serif-display);
+  font-size: 18px;
+  margin: 0 0 5px 0;
+  color: var(--color-text-dark);
+}
+
+.product-price {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: #666;
+  margin: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.empty-state h2 {
+  font-family: var(--font-serif-display);
+  font-size: 36px;
+  margin-bottom: 15px;
+}
+
+.empty-state p {
+  font-family: var(--font-sans);
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.clear-filters-btn {
+  background: transparent;
+  border: 1px solid #000;
+  padding: 12px 30px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.clear-filters-btn:hover {
+  background: #000;
+  color: #fff;
+}
+
+.load-more-container {
+  text-align: center;
+  margin-top: 80px;
+}
+
+.load-more-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #000;
+  padding-bottom: 5px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #000;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.load-more-btn:hover {
+  color: #666;
+  border-bottom-color: #666;
+}
+
+.load-more-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 30px;
+  }
+}
+
+@media (max-width: 900px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-title { font-size: 42px; }
+}
+
+@media (max-width: 500px) {
+  .products-grid {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 30px 0;
+    padding: 0 15px;
+  }
+}

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { supabase } from '../../supabase';
-import { adminCredentials } from '../../adminCredentials';
+import { supabase, invokeEdgeFunction } from '../../supabase';
 import { showBlockingLoader, hideBlockingLoader, addToast } from '../../store/uiSlice';
 
 const ContactForm = ({ content = {} }) => {
@@ -15,37 +14,16 @@ const ContactForm = ({ content = {} }) => {
     
     dispatch(showBlockingLoader('Sending your inquiry...'));
 
-    const htmlTemplate = `
-      <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #fdfbf7; color: #1a1a1a;">
-        <div style="text-align: center; margin-bottom: 40px;">
-          <img src="${adminCredentials.logo_url}" alt="Amaeti Logo" style="height: 40px; filter: brightness(0);" />
-        </div>
-        <div style="background-color: #ffffff; padding: 40px; border: 1px solid #eaeaea;">
-          <h2 style="margin-top: 0; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; font-size: 14px; border-bottom: 1px solid #eaeaea; padding-bottom: 20px;">New Atelier Inquiry</h2>
-          <p style="font-size: 14px; margin-bottom: 10px;"><strong>Name:</strong> ${formData.name}</p>
-          <p style="font-size: 14px; margin-bottom: 10px;"><strong>Email:</strong> ${formData.email}</p>
-          <p style="font-size: 14px; margin-bottom: 10px;"><strong>Subject:</strong> ${formData.subject}</p>
-          <div style="margin-top: 30px;">
-            <p style="font-weight: 600; font-size: 14px;">Message:</p>
-            <p style="white-space: pre-wrap; line-height: 1.8; color: #4a4a4a; font-size: 14px;">${formData.message}</p>
-          </div>
-        </div>
-        <div style="text-align: center; margin-top: 30px; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px;">
-          <p>This is an automated message from <a href="${adminCredentials.platform_url}" style="color: #1a1a1a;">amaeti.com</a></p>
-        </div>
-      </div>
-    `;
-
-    const config = {
-      from: { email: adminCredentials.from_email, name: adminCredentials.from_name },
-      to: [{ email: adminCredentials.admin_email, name: "Admin" }],
-      subject: `New Inquiry: ${formData.subject}`,
-      html: htmlTemplate
-    };
-
     try {
-      const { data, error } = await supabase.functions.invoke('send-email', {
-        body: { config }
+      const { data, error } = await invokeEdgeFunction('send-email', {
+        action: "send_contact_inquiry",
+        email: formData.email,
+        payload: {
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message
+        }
       });
 
       if (error) throw error;

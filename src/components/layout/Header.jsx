@@ -1,58 +1,111 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, ChevronDown, User } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCategories } from '../../store/categoriesSlice';
+import { toggleCart, selectCartItemCount, clearCart } from '../../store/cartSlice';
+import { clearAuthData } from '../../store/authSlice';
+import { showBlockingLoader, hideBlockingLoader } from '../../store/uiSlice';
+import { supabase } from '../../supabase';
 import logoWordmark from '../../assets/logo-wordmark.svg';
 import logoMonogram from '../../assets/logo.svg';
+import '../../styles/Header.css';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showExploreDropdown, setShowExploreDropdown] = useState(false);
+  const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
+  
+  // Mobile accordion states
+  const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
+  
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { items: categories, status } = useSelector(state => state.categories);
+  const itemCount = useSelector(selectCartItemCount);
+  const { user, profile } = useSelector(state => state.auth);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchCategories());
+    }
+  }, [status, dispatch]);
 
   useEffect(() => {
     const handleScroll = () => {
-      const threshold = window.location.pathname === '/' ? window.innerHeight * 0.95 : 50;
-      setIsScrolled(window.scrollY > threshold);
+      setIsScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isHome = location.pathname === '/';
-  const isTransparent = isHome && !isScrolled;
 
-  const headerStyle = isHome ? {
-    position: 'fixed',
-    top: isScrolled ? '0' : '35px', 
-    width: '100%',
-    background: isScrolled ? 'rgba(250, 249, 246, 0.85)' : 'transparent',
-    backdropFilter: isScrolled ? 'blur(15px)' : 'none',
-    WebkitBackdropFilter: isScrolled ? 'blur(15px)' : 'none',
-    borderBottom: isScrolled ? '1px solid rgba(212, 197, 177, 0.3)' : '1px solid transparent'
-  } : {
-    position: 'sticky',
-    top: '0',
-    background: 'rgba(250, 249, 246, 0.85)',
-    backdropFilter: 'blur(15px)',
-    WebkitBackdropFilter: 'blur(15px)',
-    borderBottom: '1px solid rgba(212, 197, 177, 0.3)'
-  };
+
+  const isTransparent = location.pathname === '/' && !isScrolled;
 
   return (
     <>
-      <header className={`luxe-nav ${isScrolled ? 'scrolled' : ''} ${isTransparent ? 'transparent-mode' : ''}`} style={headerStyle}>
-        <div className="nav-container">
-          <button className="burger-menu-btn" onClick={() => setMobileMenuOpen(true)}>
-            <Menu size={24} color={isTransparent ? '#ffffff' : 'var(--color-text-dark)'} />
+      <header className={`app-header ${isScrolled ? 'scrolled' : ''} ${isTransparent ? 'transparent' : ''}`}>
+        <div className="container-fluid d-flex justify-content-between align-items-center w-100 p-0">
+          
+          <button className="mobile-menu-btn d-block d-lg-none" onClick={() => setMobileMenuOpen(true)}>
+            <Menu size={24} />
           </button>
 
-          <nav className="nav-links">
-            <Link to="/" className={`nav-link-item ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>
-            <Link to="/about" className={`nav-link-item ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
-            <Link to="/contact" className={`nav-link-item ${location.pathname === '/contact' ? 'active' : ''}`}>Contact</Link>
+          <nav className="nav-links d-none d-lg-flex">
+            <Link to="/products" className={`nav-link-item ${location.pathname.startsWith('/products') ? 'active' : ''}`}>Shop</Link>
+            
+            {/* Categories Dropdown */}
+            <div 
+              className="nav-item-dropdown"
+              onMouseEnter={() => setShowCategoriesDropdown(true)}
+              onMouseLeave={() => setShowCategoriesDropdown(false)}
+            >
+              <div className="nav-link-item" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Categories <ChevronDown size={14} />
+              </div>
+              
+              {showCategoriesDropdown && (
+                <div className="dropdown-menu-custom">
+                  <div className="dropdown-inner">
+                    <Link to="/categories" className="dropdown-item view-all">View All</Link>
+                    <div className="dropdown-divider"></div>
+                    <div className="dropdown-scroll-area">
+                      {categories.map((cat, idx) => (
+                        <Link key={idx} to={`/products?category=${cat.slug}`} className="dropdown-item">
+                          {cat.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Explore Dropdown (Home, About, Contact) */}
+            <div 
+              className="nav-item-dropdown"
+              onMouseEnter={() => setShowExploreDropdown(true)}
+              onMouseLeave={() => setShowExploreDropdown(false)}
+            >
+              <div className="nav-link-item" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                Explore <ChevronDown size={14} />
+              </div>
+              
+              {showExploreDropdown && (
+                <div className="dropdown-menu-custom">
+                  <div className="dropdown-inner">
+                    <Link to="/" className="dropdown-item">Home</Link>
+                    <Link to="/about" className="dropdown-item">About Us</Link>
+                    <Link to="/contact" className="dropdown-item">Contact</Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
 
           <Link to="/" className="d-flex align-items-center justify-content-center">
@@ -60,59 +113,98 @@ const Header = () => {
               src={logoWordmark}
               alt="amaeti wordmark"
               className="nav-brand-img"
-              style={{
-                height: '42px',
-                filter: isScrolled ? 'drop-shadow(0 2px 5px rgba(0,0,0,0.05))' : 'none'
-              }}
             />
           </Link>
 
-          <div className="nav-actions">
-            <span className="coming-soon-badge" style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '11px',
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              color: 'var(--color-text-muted)',
-              borderBottom: '1px solid var(--color-primary)',
-              paddingBottom: '2px',
-              transition: 'all 0.3s'
-            }}>Coming Soon</span>
+          <div className="nav-actions d-none d-lg-flex">
+            {user && profile ? (
+              <Link to="/dashboard" className="nav-text-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <User size={18} /> {profile.username}
+              </Link>
+            ) : (
+              <Link to="/login" className="nav-text-btn">Log In</Link>
+            )}
+            <button className="nav-text-btn cart-btn" onClick={() => dispatch(toggleCart())}>
+              Cart ({itemCount})
+            </button>
           </div>
         </div>
       </header>
 
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100vh',
-          backgroundColor: 'rgba(26,26,26,0.95)',
-          backdropFilter: 'blur(10px)',
-          zIndex: 2000,
-          padding: '40px 30px',
-          display: 'flex',
-          flexDirection: 'column',
-          animation: 'slideUpFade 0.4s ease-out'
-        }}>
-          <div className="d-flex justify-content-between align-items-center mb-5">
-            <div className="d-flex align-items-center gap-0" style={{ gap: '0px' }}>
-              <img src={logoMonogram} alt="amaeti icon" style={{ height: '45px', filter: 'invert(1) brightness(100)' }} />
-              <img src={logoWordmark} alt="amaeti wordmark" style={{ height: '30px', filter: 'invert(1) brightness(100)' }} />
+        <div className="mobile-menu-overlay">
+          <div className="mobile-menu-header">
+            <div className="mobile-brand">
+              <img src={logoMonogram} alt="amaeti icon" style={{ height: '45px' }} />
+              <img src={logoWordmark} alt="amaeti wordmark" style={{ height: '30px' }} />
             </div>
-            <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', color: '#fff' }}>
+            <button className="mobile-close-btn" onClick={() => setMobileMenuOpen(false)}>
               <X size={28} />
             </button>
           </div>
-          <div className="d-flex flex-column gap-4" style={{ marginTop: '40px' }}>
-            <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', fontSize: '24px', fontFamily: 'var(--font-serif-display)', textDecoration: 'none', letterSpacing: '0.1em' }}>Home</Link>
-            <Link to="/about" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', fontSize: '24px', fontFamily: 'var(--font-serif-display)', textDecoration: 'none', letterSpacing: '0.1em' }}>About</Link>
-            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', fontSize: '24px', fontFamily: 'var(--font-serif-display)', textDecoration: 'none', letterSpacing: '0.1em' }}>Contact</Link>
+          
+          <div className="mobile-nav-list">
+            <Link to="/products" onClick={() => setMobileMenuOpen(false)} className="mobile-nav-link">Shop</Link>
+            
+            <div className="mobile-accordion">
+              <div 
+                className="mobile-nav-link" 
+                onClick={() => setMobileCategoriesOpen(!mobileCategoriesOpen)}
+              >
+                Categories <ChevronDown size={24} style={{ transform: mobileCategoriesOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
+              </div>
+              {mobileCategoriesOpen && (
+                <div className="mobile-dropdown-list">
+                  <Link to="/categories" onClick={() => setMobileMenuOpen(false)} className="mobile-sublink">View All Categories</Link>
+                  {categories.map((cat, idx) => (
+                    <Link key={idx} to={`/products?category=${cat.slug}`} onClick={() => setMobileMenuOpen(false)} className="mobile-sublink">
+                      {cat.title}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="mobile-accordion">
+              <div 
+                className="mobile-nav-link" 
+                onClick={() => setMobileExploreOpen(!mobileExploreOpen)}
+              >
+                Explore <ChevronDown size={24} style={{ transform: mobileExploreOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
+              </div>
+              {mobileExploreOpen && (
+                <div className="mobile-dropdown-list">
+                  <Link to="/" onClick={() => setMobileMenuOpen(false)} className="mobile-sublink">Home</Link>
+                  <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="mobile-sublink">About Us</Link>
+                  <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="mobile-sublink">Contact</Link>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mobile-actions">
+            {user && profile ? (
+              <Link to="/dashboard" className="nav-text-btn" style={{ color: '#fff', fontSize: '14px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={() => setMobileMenuOpen(false)}>
+                <User size={16} /> {profile.username}
+              </Link>
+            ) : (
+              <Link to="/login" className="nav-text-btn" style={{ color: '#fff', fontSize: '14px', textDecoration: 'none' }} onClick={() => setMobileMenuOpen(false)}>Log In</Link>
+            )}
+            <button 
+              className="nav-text-btn" 
+              style={{ color: '#fff', fontSize: '14px' }}
+              onClick={() => {
+                setMobileMenuOpen(false);
+                dispatch(toggleCart());
+              }}
+            >
+              Cart ({itemCount})
+            </button>
           </div>
         </div>
       )}
+
     </>
   );
 };
